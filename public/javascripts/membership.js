@@ -93,8 +93,8 @@ mainModule.controller('memberController', ['$scope', '$http', function($scope, $
     		return;
     	}
     	var req = {
-    			 method: 'POST',
-    			 url: './membership/deleteMember?id='+id,
+    			 method: 'DELETE',
+    			 url: './membership/'+id,
     			 headers: {
     			   'Accept': 'text/plain'
     			 }
