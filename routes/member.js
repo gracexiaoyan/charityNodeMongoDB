@@ -106,7 +106,7 @@ router.put('/:id', function(req, res, next) {
     });
 });
 
-/* DELETE event by id */
+/* DELETE member by id */
 router.delete('/:id', function(req, res, next) {
   Member.findByIdAndRemove(req.params.id, req.body, function (err, post) {
     if (err) return next(err);

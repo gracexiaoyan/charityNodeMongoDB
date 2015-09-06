@@ -3,23 +3,27 @@ var mainModule = angular.module('mainModule');
 mainModule.controller('eventController', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
 	// show the new event dialog
     $scope.newEvent = function (){
-    	var queryCondition = [];
     	var dataQuery;
-    	if($scope.qName){
-    		queryCondition.push({"propertyKey" : "name", "propertyExpression" : "like", "propertyValue" : $scope.qName});
-    	}
-    	if($scope.qPhone){
-    		queryCondition.push({"propertyKey" : "cellphone", "propertyExpression" : "like", "propertyValue" : $scope.qPhone});
-    	}
-    	if($scope.qCard){
-    		queryCondition.push({"propertyKey" : "cardId", "propertyExpression" : "like", "propertyValue" : $scope.qCard});
-    	}
-    	if(queryCondition.length > 0){
-    		dataQuery = {"conditions":queryCondition};
+        var con = {};
+        var hasCon = false;
+        if($scope.qName){
+            con["name"] = $scope.qName;
+            hasCon = true;
+        }
+        if($scope.qCellPhone){
+            con["cellphone"] = $scope.qCellPhone;
+            hasCon = true;
+        }
+        if($scope.qCard){
+            con["cardId"] = $scope.qCard;
+            hasCon = true;
+        }
+    	if(hasCon){
+    		dataQuery = {"conditions":con};
     		var req = {
        			method:'POST',
-        		url: './membership/listAllMembers',
-        		data: queryCondition
+        		url: './membership/listMembersWithoutPage',
+        		data: dataQuery
         	};
          	$http(req).then(function(response) {
       	        	if(response.data.length == 0){
@@ -48,10 +52,9 @@ mainModule.controller('eventController', ['$scope', '$http', '$filter', function
   		
   		$scope.attendDate=new Date();
   		if(memberInfo.birthday){
-  			var dataArray = memberInfo.birthday.split("-");
-			$scope.birthday=new Date(dataArray[0], dataArray[1]-1, dataArray[2]);
+            $scope.birthday=new Date(memberInfo.birthday);
     	}
-    	$scope.memberId=memberInfo.id;
+    	$scope.memberId=memberInfo._id;
     	$scope.name=memberInfo.name;
     	$scope.sex=memberInfo.sex;        	
     	$scope.email=memberInfo.email;
@@ -65,26 +68,20 @@ mainModule.controller('eventController', ['$scope', '$http', '$filter', function
     
     // show the edit event dialog
     $scope.getEvent = function (id) {
-    	$http.get("./events/getEvent?id="+id)
+    	$http.get("./events/"+id)
         .success(function(data, status, headers, config) {
-        	if(data.length != 1){
-        		alert("系统错误，请联系管理员。");
-        		return;
-        	}
         	$('#eventModal').modal();
-        	var eventData = data[0][0];
-        	var memberData = data[0][1];
+        	var eventData = data;
+        	var memberData = data.memberId;
         	if(memberData.birthday){
-        		var dataArray = memberData.birthday.split("-");
-        		$scope.birthday=new Date(dataArray[0], dataArray[1]-1, dataArray[2]);
+                $scope.birthday=new Date(memberInfo.birthday);
         	}
         	if(eventData.attendDate){
-        		var dataArray = eventData.attendDate.split("-");
-        		$scope.attendDate=new Date(dataArray[0], dataArray[1]-1, dataArray[2]);
+                $scope.attendDate=new Date(eventData.attendDate);
         	}
-        	$scope.id= eventData.id;
+        	$scope.id= eventData._id;
         	$scope.donate= eventData.donate;
-        	$scope.memberId= memberData.id;
+        	$scope.memberId= memberData._id;
         	$scope.name=memberData.name;
         	$scope.sex=memberData.sex;        	
         	$scope.email=memberData.email;
@@ -107,24 +104,47 @@ mainModule.controller('eventController', ['$scope', '$http', '$filter', function
 			 alert("请填写经费。");
 			 return;
 		 }
-	     $.ajax({
-	     	type: "POST",
-	 		url: "./events/addEvent",
-	 		data: $('#eventForm').serialize(),
-	 		success: function(msg){
-	 			if(msg=="success"){
-	 				alert("保存活动信息成功。");        	 				
-	 				$("#eventModal").modal('hide');   
-	 				$scope.queryEvent();
-	 			}
-	 			else{
-	 				alert("保存活动信息失败。");
-	 			}
-	        },
-	 		error: function(jqXHR, textStatus, errorThrown){
-	 			alert("保存活动信息失败。");
-	 		}
-	       });
+         if($scope.id){
+            $.ajax({
+                type: "PUT",
+                url: "./events/" + $scope.id,
+                data: $('#eventForm').serialize(),
+                success: function(msg){
+                    if(msg=="success"){
+                        alert("保存活动信息成功。");                         
+                        $("#eventModal").modal('hide');   
+                        $scope.queryEvent();
+                    }
+                    else{
+                        alert("保存活动信息失败。");
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    alert("保存活动信息失败。");
+                }
+           });
+         }
+         else{
+            $.ajax({
+            type: "POST",
+            url: "./events/addEvent",
+            data: $('#eventForm').serialize(),
+            success: function(msg){
+                if(msg=="success"){
+                    alert("保存活动信息成功。");                         
+                    $("#eventModal").modal('hide');   
+                    $scope.queryEvent();
+                }
+                else{
+                    alert("保存活动信息失败。");
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                alert("保存活动信息失败。");
+            }
+           });
+         }
+	     
     };
 	
 	// delete event
@@ -133,8 +153,8 @@ mainModule.controller('eventController', ['$scope', '$http', '$filter', function
     		return;
     	}
     	var req = {
-    			 method: 'POST',
-    			 url: './events/deleteEvent?id='+id,
+    			 method: 'DELETE',
+    			 url: './events/'+id,
     			 headers: {
     			   'Accept': 'text/plain'
     			 }
@@ -148,26 +168,13 @@ mainModule.controller('eventController', ['$scope', '$http', '$filter', function
     };
     
     $scope.queryEvent = function() {
-    	var queryCondition = [];
     	var dataQuery;
-    	if($scope.qName){
-    		queryCondition.push({"propertyKey" : "m.name", "propertyExpression" : "like", "propertyValue" : $scope.qName});
-    	}
-    	if($scope.qPhone){
-    		queryCondition.push({"propertyKey" : "m.cellphone", "propertyExpression" : "like", "propertyValue" : $scope.qPhone});
-    	}
-    	if($scope.qCard){
-    		queryCondition.push({"propertyKey" : "m.cardId", "propertyExpression" : "like", "propertyValue" : $scope.qCard});
-    	}
-    	if($scope.qDate){
-    		queryCondition.push({"propertyKey" : "e.attendDate", "propertyExpression" : "like", "propertyValue" : $filter('date')($scope.qDate, 'yyyy-MM-dd')});
-    	}
-    	if(queryCondition.length > 0){
-    		dataQuery = {"pager":{"num":1}, "conditions":queryCondition};
-    	}
-    	else{
-    		dataQuery = {"pager":{"num":1}};
-    	}
+        if($scope.qDate){
+            dataQuery = {"pager":{"num":1}, "attendDate":$scope.qDate};
+        }
+        else{
+            dataQuery = {"pager":{"num":1}};
+        }
     	$scope.refreshEventTable(dataQuery);
     };
 }]);

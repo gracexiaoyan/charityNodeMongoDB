@@ -9,16 +9,10 @@ var ejs = require('ejs');
 var mongo = require('mongodb');
 
 var routes = require('./routes/index');
-// var users = require('./routes/users');
 var member = require('./routes/member');
 var events = require('./routes/events');
 
 var app = express();
-
-
-// view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
 
 app.engine('.html', ejs.__express);
 app.set('view engine', 'html');
@@ -44,27 +38,6 @@ app.use(function(req,res,next){
 app.use('/', routes);
 app.use('/membership', member);
 app.use('/events', events);
-// app.use('/users', users);
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function (callback) {
-//     var kittySchema = mongoose.Schema({
-//         username: String,
-//         email:String
-//     });
-//     var Kitten = mongoose.model('Kitten', kittySchema);
-
-//     var silence = new Kitten({ username: 'Silence',email: 'aa@gmail.com' });
-//     silence.save(function (err, silence) {
-//       if (err) return console.error(err);
-//     });
-//     Kitten.find(function (err, kittens) {
-//       if (err) return console.error(err);
-//       console.log(kittens);
-//       // res.render('userList', {
-//       //       "userlist" : kittens
-//       //     });
-//     });
-//   });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

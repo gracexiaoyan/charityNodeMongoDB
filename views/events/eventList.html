@@ -4,17 +4,22 @@
 	<div class="panel-heading" >
 		<div class="controls controls-row">
 		<div class="input-group">
-		  <span class="input-group-addon" id="srhQName">姓&nbsp;&nbsp;&nbsp;&nbsp;名:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		  <span class="input-group-addon" id="srhQName">姓&nbsp;&nbsp;&nbsp;&nbsp;名:&nbsp;&nbsp;&nbsp;</span>
 		  <input type="text" class="form-control" aria-describedby="srhQName" ng-model="qName">
-		  <span class="input-group-addon" id="srhQPhone">手&nbsp;&nbsp;&nbsp;&nbsp;机:&nbsp;&nbsp;&nbsp;&nbsp;</span>
-		  <input type="text" class="form-control" aria-describedby="srhQPhone" ng-model="qPhone">
-		  <span class="input-group-addon" id="srhQCard">卡&nbsp;&nbsp;&nbsp;&nbsp;号:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		  <span class="input-group-addon" id="srhQCellPhone">手&nbsp;&nbsp;&nbsp;&nbsp;机:&nbsp;&nbsp;&nbsp;</span>
+		  <input type="text" class="form-control" aria-describedby="srhQCellPhone" ng-model="qCellPhone">
+		  <span class="input-group-addon" id="srhQCard">卡&nbsp;&nbsp;&nbsp;&nbsp;号:&nbsp;&nbsp;&nbsp;</span>
 		  <input type="text" class="form-control" aria-describedby="srhQCard" ng-model="qCard">
-		  <span class="input-group-addon" id="srhQCard">活动日期:</span>
-		  <input type="date" class="form-control" aria-describedby="srhQDate" ng-model="qDate">
 		  <span class="input-group-btn">
 	        <button class="btn btn-primary" style="margin-left:5px" type="button" ng-click="newEvent()">签&nbsp;&nbsp;&nbsp;&nbsp;到</button>
 	      </span>
+		</div>
+	    </div>
+		<div class="controls controls-row">
+
+		<div class="input-group" style="margin-top:5px">
+		  <span class="input-group-addon" id="srhQCard">活动日期:</span>
+		  <input type="date" class="form-control" aria-describedby="srhQDate" ng-model="qDate" style="width:323px">
 		  <span class="input-group-btn" >
 	        <button class="btn btn-primary" style="margin-left:5px" type="button" ng-click="queryEvent()">查&nbsp;&nbsp;&nbsp;&nbsp;询</button>
 	      </span>
@@ -38,17 +43,17 @@
 	    <th>操作</th>
     </tr>
     <tr ng-repeat="event in eventList">
-    	<td>{{ event[0].attendDate }}</td>
-	    <td>{{ event[0].donate }}</td>
-	    <td>{{ event[1].name }}</td>
-	    <td>{{ event[1].sex }}</td>
-	    <td>{{ event[1].phone }}</td>
-	    <td>{{ event[1].cellphone }}</td>
-	    <td>{{ event[1].isMember }}</td>
-	    <td>{{ event[1].cardId }}</td>
-	    <td>{{ event[1].company }}</td>	    
-	    <td><a href="javascript:" ng-click="getEvent( event[0].id )">修改</a> &nbsp; 
-	    	<a href="javascript:" ng-click="deleteEvent(event[0].id)" >删除</a></td>
+    	<td>{{ event.attendDate | date : 'yyyy-MM-dd' }}</td>
+	    <td>{{ event.donate }}</td>
+	    <td>{{ event.memberId.name }}</td>
+	    <td>{{ event.memberId.sex }}</td>
+	    <td>{{ event.memberId.phone }}</td>
+	    <td>{{ event.memberId.cellphone }}</td>
+	    <td>{{ event.memberId.isMember }}</td>
+	    <td>{{ event.memberId.cardId }}</td>
+	    <td>{{ event.memberId.company }}</td>	    
+	    <td><a href="javascript:" ng-click="getEvent( event._id )">修改</a> &nbsp; 
+	    	<a href="javascript:" ng-click="deleteEvent(event._id)" >删除</a></td>
   	</tr>
   </table>
   <table class="table table-striped" height="90%"  style="margin-top:10px">
