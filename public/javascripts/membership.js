@@ -16,8 +16,7 @@ mainModule.controller('memberController', ['$scope', '$http', function($scope, $
         .success(function(data, status, headers, config) {
         	$('#myModal').modal();
         	if(data.birthday){
-        		var dataArray = data.birthday.split("-");
-        		$scope.birthday=new Date(dataArray[0], dataArray[1]-1, dataArray[2]);
+                $scope.birthday=new Date(data.birthday);
         	}
         	$scope.id= data._id;
         	$scope.name=data.name;

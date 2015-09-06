@@ -22,7 +22,7 @@ var Member = mongoose.model('Member', MemberSchema);
 /* GET list page. */
 router.get('/showListMembers', function(req, res, next) {
     console.log('enter showListMembers');
-	res.render('membership/memberList');
+	  res.render('membership/memberList');
 });
 
 /* GET list. */
@@ -36,22 +36,23 @@ router.post('/listMembers', function(req, res, next) {
     }
     
     var perPage = 10, page = req.body.pager.num > 1 ? req.body.pager.num-1 : 0;
-	Member.find(con).limit(perPage).skip(perPage*page).sort({"modifyDate":"desc"}).exec(function (err, memberList) {
-		Member.count().exec(function (err, count) {
-			// console.log(memberList);
-			if (err) return console.error(err);
-			var pages = Math.ceil(count / perPage);
-			var result = {"rows":memberList,"pager":{"num":req.body.pager.num,"count":pages},"total":count};
-            res.json(result);
-        });
-	});
+  	Member.find(con).limit(perPage).skip(perPage*page).sort({"modifyDate":"desc"}).exec(function (err, memberList) {
+  		Member.count().exec(function (err, count) {
+  			// console.log(memberList);
+  			if (err) return console.error(err);
+  			var pages = Math.ceil(count / perPage);
+  			var result = {"rows":memberList,"pager":{"num":req.body.pager.num,"count":pages},"total":count};
+              res.json(result);
+          });
+  	});
 
 });
 
 /* and or update a member. */
 router.post('/addMember', function(req, res, next) {
     console.log('enter addMember');
-    // TODO check if the member has been existed
+    console.log(req.body);
+    // check if the member has been existed
     Member.count({cellphone:/req.body.cellphone/i}, function(err, count) {
     	if (err){
       	  return next(err);
@@ -66,7 +67,7 @@ router.post('/addMember', function(req, res, next) {
 		      if (err){
 		      	return next(err);
 		      } 
-		      console.log(post);
+		      
 		      res.json("success");
 		    });
         }
