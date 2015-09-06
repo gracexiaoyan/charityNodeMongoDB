@@ -110,19 +110,24 @@ mainModule.controller('memberController', ['$scope', '$http', function($scope, $
     $scope.queryMember = function() {
     	var dataQuery;
         var con = {};
+        var hasCon = false;
     	if($scope.qName){
             con["name"] = $scope.qName;
+            hasCon = true;
     	}
     	if($scope.qCellPhone){
             con["cellphone"] = $scope.qCellPhone;
+            hasCon = true;
     	}
     	if($scope.qPhone){
             con["phone"] = $scope.qPhone;
+            hasCon = true;
     	}
     	if($scope.qCard){
             con["cardId"] = $scope.qCard;
+            hasCon = true;
     	}
-    	if(queryCondition.length > 0){
+    	if(hasCon){
     		dataQuery = {"pager":{"num":1}, "conditions":con};
     	}
     	else{
